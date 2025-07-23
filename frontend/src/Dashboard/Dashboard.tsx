@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
     const [startIdx, setStartIdx] = useState(0);
     const perPage = 12;
     const [total, setTotal] = useState(0);
-    const [userInput,setUserInput]=useState('');
+    //const [userInput,setUserInput]=useState('');
     const opRef = useRef<OverlayPanel>(null);
 const [inputValue, setInputValue] = useState('');
     const [loading, setLoading] = useState(false);
@@ -95,7 +95,6 @@ const [inputValue, setInputValue] = useState('');
         }
 
         setPickedMap(updated);
-        setUserInput(inputValue);
         setInputValue('');
         opRef.current?.hide();
     };
