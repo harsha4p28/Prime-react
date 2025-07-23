@@ -6,6 +6,7 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { OverlayPanel } from 'primereact/overlaypanel';
+import ClipLoader from "react-spinners/ClipLoader";
         
 
 interface Artwork {
@@ -27,8 +28,11 @@ const Dashboard: React.FC = () => {
     const [userInput,setUserInput]=useState('');
     const opRef = useRef<OverlayPanel>(null);
 const [inputValue, setInputValue] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const loadData = async (page: number) => {
+        try{
+            setLoading(true);
         const res = await fetch(`https://api.artic.edu/api/v1/artworks?page=${page}`);
         const data = await res.json();
         setTotal(data.pagination.total);
@@ -42,6 +46,11 @@ const [inputValue, setInputValue] = useState('');
             date_end: item.date_end,
         }));
         setItems(artworks);
+        }catch(error){
+            console.error('Error fetching data:', error);
+        }finally{
+            setLoading(false);
+        }
     };
 
     const showOverlay = (event: React.MouseEvent) => {
@@ -61,7 +70,9 @@ const [inputValue, setInputValue] = useState('');
         const pagesNeeded = Math.ceil(numToSelect / perPage);
         const selectedArtworks: Artwork[] = [];
 
-        for (let i = 1; i <= pagesNeeded; i++) {
+        const pages= startIdx/perPage + 1;
+        
+        for (let i = pages; i <= pagesNeeded+pages; i++) {
             const res = await fetch(`https://api.artic.edu/api/v1/artworks?page=${i}`);
             const data = await res.json();
             const artworks = data.data.map((item: any) => ({
@@ -112,6 +123,12 @@ const [inputValue, setInputValue] = useState('');
 
     return (
         <div className="dashboard p-4">
+        {loading ? (
+          <div className="flex justify-center items-center h-screen">
+              <ClipLoader color="#3b82f6" size={50} />
+          </div>
+        ) : (
+            <>
             <h2 className="mb-3">Dashboard</h2>
             <DataTable
                 value={items}
@@ -170,8 +187,10 @@ const [inputValue, setInputValue] = useState('');
                     </button>
                 </div>
             </OverlayPanel>
-
-        </div>
+            </>
+        
+        )}
+            </div>
     );
 };
 
